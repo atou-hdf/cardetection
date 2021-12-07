@@ -34,5 +34,6 @@ The project is based on Centernet architecture, tensorflow object detection api 
 * Running detection on video.
 * Controlling the model (for training or for inference).
 
-## Credits
-* [Image](https://pxhere.com/en/photo/1420825)
+## Margin
+* [Headline image credit](https://pxhere.com/en/photo/1420825)
+* [You can downoald the model weights from here](https://drive.google.com/drive/folders/1srMUxkCxiJHRAMOVxEOQg4atKkNFpx0Y?usp=sharing)
