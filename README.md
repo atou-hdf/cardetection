@@ -1,5 +1,9 @@
 # Car detection project
 
+<p align="center">
+  <img width="600" src="img/detectoins2.png">
+</p>
+
 ## Abstract
 In this project I’ll be building an object detector to detect cars, pedestrians, buses and other objects. The algorithm will be able to detect 12 objects: Animal, human, movable_object, static_object, bicycle, bus, car, construction, emergency, motorcycle, trailer, and truck.
 
@@ -25,7 +29,10 @@ The project is based on Centernet architecture, tensorflow object detection api 
 7. Generate tfrecord files.
 8. Train the model.
 
-## To do
+## Working on
 * Running detection on image.
 * Running detection on video.
 * Controlling the model (for training or for inference).
+
+## Credits
+* [Image](https://pxhere.com/en/photo/1420825)
