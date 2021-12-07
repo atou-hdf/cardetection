@@ -6,15 +6,18 @@ from skimage import io
 from PIL import Image
 from six import BytesIO
 import tensorflow as tf
+import numpy as np
 import contextlib2
 from object_detection.dataset_tools import tf_record_creation_util
 from object_detection.utils import dataset_util
 from tensorflow._api.v2 import train
 import configurations as cfg
 
+# DEBUG
+import utils.test as t
 
 def progress_bar(length, *, prefix="", message="", file=sys.stdout):
-    if message == "":
+    if not message:
         message = f"Done processing {prefix}"
     
     def progress_bar_at_index(index):
@@ -32,7 +35,6 @@ def progress_bar(length, *, prefix="", message="", file=sys.stdout):
 
 def get_annotations(file_path):
     """Get annotations list from json file"""
-
     annotations = []
     with open(file_path) as file:
         annotations = json.load(file)
@@ -50,6 +52,8 @@ def get_image_dict(image: dict, objects) -> dict:
 
     with tf.io.gfile.GFile(path, 'rb') as fid:
         encoded = fid.read()
+        img = tf.io.decode_image(encoded, 3)
+        numpy = np.asarray(img)
 
     # encoded = io.imread(path)
     # encoded = Image.open(path)
@@ -57,6 +61,7 @@ def get_image_dict(image: dict, objects) -> dict:
     iformat = b'jpeg' # hard coded for now
 
     idict = {
+        "numpy": numpy,
         "height": height,
         "width": width,
         "filename": filename,
@@ -76,7 +81,15 @@ def create_tf_example(image_dict):
     ymins = [iobject['bbox'][1]/height for iobject in image_dict["objects"]]
     ymaxs = [iobject['bbox'][3]/height for iobject in image_dict["objects"]]
     classes = [iobject['category_id'] for iobject in image_dict["objects"]]
-    classes_text = [cfg.BYTE_NAME_MAPPER[cls] for cls in classes]
+    classes_text = [cls.encode('utf-8') for cls in classes]
+
+
+    
+
+    # XXX: DEBUG
+    scores = [1 for scl in classes]
+    boxes = np.array([[iobject['bbox'][1], iobject['bbox'][0], iobject['bbox'][3], iobject['bbox'][2]] for iobject in image_dict["objects"]])
+    t.plot_detections(image_dict["numpy"], boxes, classes, scores, cfg.LABELMAP)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
       'image/height': dataset_util.int64_feature(image_dict["height"]),
@@ -110,7 +123,7 @@ def write_tf_record(image_list: list, output_file: str, shards_number: int):
             output_shard_index = index % shards_number
             output_tfrecords[output_shard_index].write(tf_example.SerializeToString())
 
-def create_tf_record():
+def create_tf_records():
     # Training set
     print("Creating training records...")
     train_path = os.path.join(cfg.NEW_DATASET_ANNOTATION_PATH, "train.json")
@@ -156,6 +169,3 @@ def create_tf_record():
                 pb_val(index)
     else:
         raise Exception("Problem importing validation annotations!")
-
-if __name__ == "__main__":
-    create_tf_record()

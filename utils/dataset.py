@@ -114,7 +114,7 @@ def build_annotations(folder):
             
     return annotations_dict
 
-def main():
+def create_json_annotations():
     # Dump training data into a json file
     print("Generating training annotations...")
     trai_annotations_path = os.path.join(cfg.NEW_DATASET_ANNOTATION_PATH, "train.json")
@@ -132,6 +132,3 @@ def main():
     with open(val_annotations_path, 'w') as outfile:
         outfile.write(val_json_object)
     print("Validation annotations successfully generated")
-
-if __name__=='__main__':
-    main()

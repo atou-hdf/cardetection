@@ -1,4 +1,6 @@
 
+
+
 DATA_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\nuimages-v1.0-all-samples\\samples"
 DATASET_ANOTTATION_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\nuimages-v1.0-all-metadata"
 NEW_DATASET_ANNOTATION_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\annotations"
@@ -21,18 +23,18 @@ ID_MAPER = {
 
 # Map categories's ids to names
 BYTE_NAME_MAPPER = {
-    1: b"animal",
-    2: b"human",
-    3: b"movable_object",
-    4: b"static_object",
-    5: b"bicycle",
-    6: b"bus",
-    7: b"car",
-    8: b"construction",
-    9: b"emergency",
-    10: b"motorcycle",
-    11: b"trailer",
-    12: b"truck"
+    1: "animal",
+    2: "human",
+    3: "movable_object",
+    4: "static_object",
+    5: "bicycle",
+    6: "bus",
+    7: "car",
+    8: "construction",
+    9: "emergency",
+    10: "motorcycle",
+    11: "trailer",
+    12: "truck"
 }
 
 # Map dataset tokens to our new categories' names
@@ -69,3 +71,11 @@ TFRECORED = {
     "train_shards": 20,
     "val_shards": 5
 }
+
+# Model settings
+LABELMAP = {}
+for name, id in ID_MAPER.items():
+    LABELMAP[id] = {
+        'id': id,
+        "name": name
+    }

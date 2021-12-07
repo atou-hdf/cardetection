@@ -2,3 +2,8 @@ model/
 pretrained_model/
 annotations/
 images/
+centernet/
+test.py
+test_main.py
+record_test.py
+check_configuration.py
