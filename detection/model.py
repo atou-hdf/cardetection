@@ -4,8 +4,8 @@ from absl import flags
 from absl import app
 from object_detection.builders import model_builder
 from object_detection.utils import config_util
-import object_detection.model_main_tf2 as model_main_tf2
-import object_detection.exporter_main_v2 as exporter_main_v2
+
+
 import configurations as cfg
 import utils.processing as processing
 
@@ -69,6 +69,7 @@ class Model:
         return self._model_dir
 
     def train(self):
+        import object_detection.model_main_tf2 as model_main_tf2 # imported here to avoid conflicts with exporter_main_v2
         assert self.is_training, Exception('Model is not inialized to be trained !')
 
         # model_main_tf2 exits with SystemExit exception
@@ -81,6 +82,7 @@ class Model:
             print("=== Training done ! Good luck with your predections ;) ===")
     
     def export(self):
+        import object_detection.exporter_main_v2 as exporter_main_v2 # imported here to avoid conflicts with model_main_tf2
         assert self.is_training, Exception('Model is not inialized to be exported !')
 
         # exporter_main_v2 exits with SystemExit exception
