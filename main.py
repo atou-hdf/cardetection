@@ -18,19 +18,23 @@ def main(argv):
         print("== Generating json files annotations...")
         dataset.create_json_annotations()
         print("== Annotations generated")
-        return None
 
     elif FLAGS.mode == "tfrecord":
         print("== Generating tensorflow records...")
         tf_record.create_tf_records()
         print("== Tensorflow records generated")
-        return None
     
     elif FLAGS.mode == "train":
         print("== Model training process starting...")
         model = get_training_model()
-        print(model._model_dir)
         model.train()
+        model.export() # by default the model is exported after training
+
+    elif FLAGS.mode == "export":
+        print("== Model exporing process starting...")
+        model = get_training_model()
+        model.export()
+
 
     elif FLAGS.mode == "detect":
         flags.mark_flag_as_required("path")
@@ -38,6 +42,9 @@ def main(argv):
         # TODO: handle if the path is for video or image
         model = get_inference_model()
         processing.plot_detections_on_image(FLAGS.path, model)
+
+    else:
+        raise "Doesn't exist, sorry"
 
 
 if __name__ == '__main__':

@@ -64,14 +64,6 @@ TOKEN_MAPPER = {
     "6021b5187b924d64be64a702e5570edf": "truck"
 }
 
-# TF RECORD SETTING
-TFRECORED = {
-    "train_path": r'D:\Mathilda\24_MLProjects\Cardetection\cardetector\object_detection\cardetector\annotations\train.record',
-    "val_path": r'D:\Mathilda\24_MLProjects\Cardetection\cardetector\object_detection\cardetector\annotations\val.record',
-    "train_shards": 20,
-    "val_shards": 5
-}
-
 # Model settings
 LABELMAP = {
     id: {
@@ -79,6 +71,14 @@ LABELMAP = {
         'name': name
     }
     for name, id in ID_MAPER.items()
+}
+
+# TF RECORD SETTING
+TFRECORED = {
+    "train_path": r'D:\Mathilda\24_MLProjects\Cardetection\cardetector\object_detection\cardetector\annotations\train.record',
+    "val_path": r'D:\Mathilda\24_MLProjects\Cardetection\cardetector\object_detection\cardetector\annotations\val.record',
+    "train_shards": 20,
+    "val_shards": 5
 }
 
 # Detection model configurations
@@ -92,4 +92,11 @@ INFERENCE_MODEL = {
 TRAINING_MODEL = {
     'pipeline_config_path': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\model\\pipeline.config',
     'model_dir': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\model'
+}
+
+# Exporting model configurations
+EXPORTING_MODEL = {
+    'config': TRAINING_MODEL['pipeline_config_path'],
+    'checkpoints_dir': TRAINING_MODEL['model_dir'],
+    'output_dir': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\centernet'
 }

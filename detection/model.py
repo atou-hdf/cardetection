@@ -1,11 +1,12 @@
 import tensorflow as tf
 import numpy as np
+from absl import flags
 from absl import app
 from object_detection.builders import model_builder
 from object_detection.utils import config_util
-from tensorflow.python.ops.gen_math_ops import Mod
-import configurations as cfg
 import object_detection.model_main_tf2 as model_main_tf2
+import object_detection.exporter_main_v2 as exporter_main_v2
+import configurations as cfg
 import utils.processing as processing
 
 _INFERENCE_MODEL = None
@@ -76,8 +77,21 @@ class Model:
             model_main_tf2.FLAGS.pipeline_config_path = self.pipeline_cfg
             app.run(model_main_tf2.main)
         except SystemExit:
+            del model_main_tf2.FLAGS.pipeline_config_path # To avoid conflicts with exporter_main_v2
             print("=== Training done ! Good luck with your predections ;) ===")
+    
+    def export(self):
+        assert self.is_training, Exception('Model is not inialized to be exported !')
 
+        # exporter_main_v2 exits with SystemExit exception
+        try:
+            exporter_main_v2.FLAGS.pipeline_config_path = cfg.EXPORTING_MODEL['config']
+            exporter_main_v2.FLAGS.trained_checkpoint_dir = cfg.EXPORTING_MODEL['checkpoints_dir']
+            exporter_main_v2.FLAGS.output_directory = cfg.EXPORTING_MODEL['output_dir']
+            app.run(exporter_main_v2.main)
+        except SystemExit:
+            del exporter_main_v2.FLAGS.pipeline_config_path # To avoid conflicts with model_main_tf2
+            print("=== Model exported, all the best ===")
 
     def _get_detection(self):
         """Get a tf.function for detection."""
@@ -105,6 +119,8 @@ class Model:
                 image_np: image as numpy array
                 detections: objects in the image
         """
+        assert not self.is_training, Exception('Model is not inialized to run inference !')
+
         image_tensor = processing.get_image_tensor(path)
         image_numpy = processing.get_image_numpy(path)
 
