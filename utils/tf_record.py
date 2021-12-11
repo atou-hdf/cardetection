@@ -1,20 +1,12 @@
 import os
 import sys
-# from PIL import Image
 import json
-from skimage import io
-from PIL import Image
-from six import BytesIO
 import tensorflow as tf
 import numpy as np
 import contextlib2
 from object_detection.dataset_tools import tf_record_creation_util
 from object_detection.utils import dataset_util
-from tensorflow._api.v2 import train
 import configurations as cfg
-
-# DEBUG
-import utils.test as t
 
 def progress_bar(length, *, prefix="", message="", file=sys.stdout):
     if not message:
@@ -84,12 +76,10 @@ def create_tf_example(image_dict):
     classes_text = [cls.encode('utf-8') for cls in classes]
 
 
-    
-
     # XXX: DEBUG
-    scores = [1 for scl in classes]
-    boxes = np.array([[iobject['bbox'][1], iobject['bbox'][0], iobject['bbox'][3], iobject['bbox'][2]] for iobject in image_dict["objects"]])
-    t.plot_detections(image_dict["numpy"], boxes, classes, scores, cfg.LABELMAP)
+    # scores = [1 for scl in classes]
+    # boxes = np.array([[iobject['bbox'][1], iobject['bbox'][0], iobject['bbox'][3], iobject['bbox'][2]] for iobject in image_dict["objects"]])
+    # t.plot_detections(image_dict["numpy"], boxes, classes, scores, cfg.LABELMAP)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
       'image/height': dataset_util.int64_feature(image_dict["height"]),
@@ -137,7 +127,7 @@ def create_tf_records():
             output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(tf_record_close_stack,
                                                                                     cfg.TFRECORED["train_path"],
                                                                                     cfg.TFRECORED["train_shards"])
-            for index, image in enumerate(train_annotations['images'][:10000]):
+            for index, image in enumerate(train_annotations['images']):
                 objects = [a for a in train_annotations["annotations"] if a['image_id'] == image['id']]
                 idict = get_image_dict(image, objects)
                 tf_example = create_tf_example(idict)
@@ -160,7 +150,7 @@ def create_tf_records():
             output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(tf_record_close_stack,
                                                                                 cfg.TFRECORED["val_path"],
                                                                                 cfg.TFRECORED["val_shards"])
-            for index, image in enumerate(val_annotations['images'][:2000]):
+            for index, image in enumerate(val_annotations['images']):
                 objects = [a for a in val_annotations["annotations"] if a['image_id'] == image['id']]
                 idict = get_image_dict(image, objects)
                 tf_example = create_tf_example(idict)

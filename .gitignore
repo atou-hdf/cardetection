@@ -3,6 +3,7 @@ pretrained_model/
 annotations/
 images/
 centernet/
+*.pyc
 test.py
 test_main.py
 record_test.py

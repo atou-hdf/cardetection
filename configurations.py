@@ -1,6 +1,6 @@
+# TODO: Build a configuration parser to verify its values.
 
-
-
+# Dataset generation configurations
 DATA_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\nuimages-v1.0-all-samples\\samples"
 DATASET_ANOTTATION_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\nuimages-v1.0-all-metadata"
 NEW_DATASET_ANNOTATION_PATH = "D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\annotations"
@@ -73,9 +73,23 @@ TFRECORED = {
 }
 
 # Model settings
-LABELMAP = {}
-for name, id in ID_MAPER.items():
-    LABELMAP[id] = {
+LABELMAP = {
+    id: {
         'id': id,
-        "name": name
+        'name': name
     }
+    for name, id in ID_MAPER.items()
+}
+
+# Detection model configurations
+INFERENCE_MODEL = {
+    'config': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\centernet\\pipeline.config',
+    'checkpoints': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\centernet\\checkpoint\\ckpt-0',
+    'threshold': 0.2
+}
+
+# Training model configurations
+TRAINING_MODEL = {
+    'pipeline_config_path': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\model\\pipeline.config',
+    'model_dir': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\model'
+}
