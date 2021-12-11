@@ -29,7 +29,6 @@ The model is a centerNet with ResNet V2 50 as a feature extractor.
 6. Run detection on images.
 
 ## To run
-To use the applications after changing configurations.
 * To create json file annotations
 ```bash
  python main.py --mode=json
