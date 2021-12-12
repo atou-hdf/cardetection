@@ -53,7 +53,10 @@ The model is a centerNet with ResNet V2 50 as a feature extractor.
 ```bash
  python main.py --mode=detect --path={path to your image}
 ```
-
+* To run detection on an video
+```bash
+ python main.py --mode=detect --path={path to your video}
+```
 ## Todos
 * Running detection on video.
 * Parser for configuration file.
