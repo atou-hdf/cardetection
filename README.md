@@ -1,7 +1,7 @@
 # Car detection project
 
 <p align="center">
-  <img width="600" src="img/detections3.jpg">
+  <img width="2480" src="img/detections3.jpg">
 </p>
 
 ## Abstract
