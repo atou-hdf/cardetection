@@ -22,7 +22,7 @@ ID_MAPER = {
 }
 
 # Map categories's ids to names
-BYTE_NAME_MAPPER = {
+NAME_MAPPER = {
     1: "animal",
     2: "human",
     3: "movable_object",

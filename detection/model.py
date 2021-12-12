@@ -7,7 +7,7 @@ from object_detection.utils import config_util
 
 
 import configurations as cfg
-import utils.processing as processing
+import detection.processing as processing
 
 _INFERENCE_MODEL = None
 _TRAINING_MODEL = None

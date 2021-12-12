@@ -2,7 +2,7 @@ from absl import app
 from absl import flags
 import utils.dataset as dataset
 import utils.tf_record as tf_record
-import utils.processing as processing
+import detection.processing as processing
 from detection.model import get_inference_model, get_training_model
 
 FLAGS = flags.FLAGS
@@ -47,7 +47,7 @@ def main(argv):
         processing.plot_detections_on_image(FLAGS.path, model)
 
     else:
-        raise "Doesn't exist, sorry"
+        raise Exception("Doesn't exist, sorry")
 
 
 if __name__ == '__main__':
