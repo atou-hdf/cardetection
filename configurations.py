@@ -85,7 +85,7 @@ TFRECORED = {
 INFERENCE_MODEL = {
     'config': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\centernet\\pipeline.config',
     'checkpoints': r'D:\\Mathilda\\24_MLProjects\\Cardetection\\cardetector\\object_detection\\cardetector\\centernet\\checkpoint\\ckpt-0',
-    'threshold': 0.2
+    'threshold': 0.3
 }
 
 # Training model configurations

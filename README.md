@@ -1,7 +1,7 @@
 # Car detection project
 
 <p align="center">
-  <img width="600" src="img/detections3.png">
+  <img width="600" src="img/detections3.jpg">
 </p>
 
 ## Abstract
@@ -41,6 +41,14 @@ The model is a centerNet with ResNet V2 50 as a feature extractor.
 ```bash
  python main.py --mode=train
 ```
+* To train the model without exporting it
+```bash
+ python main.py --mode=train --export=False
+```
+* To export the model
+```bash
+ python main.py --mode=export
+```
 * To run detection on an image
 ```bash
  python main.py --mode=detect --path={path to your image}
@@ -48,7 +56,6 @@ The model is a centerNet with ResNet V2 50 as a feature extractor.
 
 ## Todos
 * Running detection on video.
-* Exporting model after training.
 * Parser for configuration file.
 * Handle exceptions in tfrecord generation.
 

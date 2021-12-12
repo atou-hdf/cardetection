@@ -44,7 +44,7 @@ def main(argv):
         print("\n== Detection starting...")
         # TODO: handle if the path is for video or image
         model = get_inference_model()
-        processing.plot_detections_on_image(FLAGS.path, model)
+        processing.show_image_predections(FLAGS.path, model)
 
     else:
         raise Exception("Doesn't exist, sorry")
