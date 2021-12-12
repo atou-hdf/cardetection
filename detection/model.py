@@ -95,7 +95,7 @@ class Model:
             del exporter_main_v2.FLAGS.pipeline_config_path # To avoid conflicts with model_main_tf2
             print("=== Model exported, all the best ===")
 
-    def _get_detection(self):
+    def get_detection(self):
         """Get a tf.function for detection."""
 
         @tf.function
@@ -126,7 +126,7 @@ class Model:
         image_tensor = processing.get_image_tensor(path)
         image_numpy = processing.get_image_numpy(path)
 
-        detect_fn = self._get_detection()
+        detect_fn = self.get_detection()
         detections, *_ = detect_fn(image_tensor)
 
         num_detections = int(detections.pop('num_detections'))

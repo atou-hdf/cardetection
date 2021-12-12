@@ -8,9 +8,26 @@ from detection.model import get_inference_model, get_training_model
 FLAGS = flags.FLAGS
 flags.DEFINE_string("mode", None, "Mode to use the application. Values: json, tfrecord, train, detect")
 flags.DEFINE_string("path", None, "Path to image to run detection on")
-flags.DEFINE_bool("export", True, 'Whether the model to be exported.')
+flags.DEFINE_bool("export", True, 'Whether to exporte the model after training.')
 flags.mark_flag_as_required("mode")
 
+def get_predection_method(path: str):
+    """Handle path parsing to decide wich function to use
+
+    Args:
+        path: path to image or video
+
+    Returns:
+        a detection function from processig module
+    """
+    path_list = path.split('\\')
+    extension = path_list[-1].split('.')[-1]
+    if extension in ('jpg', 'png'):
+        return processing.show_image_predections
+    elif extension == 'mp4':
+        return processing.run_inference_on_video
+    else:
+        raise Exception("File type not supported")
 
 def main(argv):
     del argv # Not used
@@ -38,17 +55,16 @@ def main(argv):
         model = get_training_model()
         model.export()
 
-
     elif FLAGS.mode == "detect":
         flags.mark_flag_as_required("path")
         print("\n== Detection starting...")
         # TODO: handle if the path is for video or image
         model = get_inference_model()
-        processing.show_image_predections(FLAGS.path, model)
+        detection = get_predection_method(FLAGS.path)
+        detection(FLAGS.path, model)
 
     else:
-        raise Exception("Doesn't exist, sorry")
-
+        raise Exception("Mode note supported")
 
 if __name__ == '__main__':
     app.run(main)

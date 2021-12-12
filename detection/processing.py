@@ -1,5 +1,5 @@
 r"""For image and video processing"""
-
+from time import strftime
 import tensorflow as tf
 import numpy as np
 import cv2
@@ -39,17 +39,18 @@ def get_image_tensor(image_path: str):
   image_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
   return image_tensor
 
-def _draw_predections_on_image(path: str, model):
-  """Draw predections on image.
-
+def _draw_boxes(image, detections, threshold):
+  """Drow bounding boxes with name and confidence on image
+  
   Args:
-    path: path to image
-    model: inference model
+    image: input image
+    detections: detections dectionnary
+    threshold: model detection threshold
 
   Returns:
-    image with predections drawn on it.
+    image with boxes drawn on it.
   """
-  # Map classe id to a specific bgr color
+
   RGB_MAPPER = {
     1: (85, 239, 196),
     2: (116, 185, 255),
@@ -64,22 +65,19 @@ def _draw_predections_on_image(path: str, model):
     11: (111, 30, 81),
     12: (18, 137, 167)
   }
-  
+
   # getting predections
-  predections = model.predict(path)
-  classes = predections['detections']['detection_classes']
-  scores =  predections['detections']['detection_scores']
-  boxes = predections['detections']['detection_boxes']
-  
+  classes = detections['detection_classes']
+  scores =  detections['detection_scores']
+  boxes = detections['detection_boxes']
+
   # getting image properties
-  image = cv2.imread(path,cv2.IMREAD_COLOR)
   height, width, _ = image.shape
   font = cv2.FONT_HERSHEY_DUPLEX
   label_id_offset = 1 # 0 for background
 
-  # drwing predections on image
   for idx, cls in enumerate(classes):
-    if scores[idx] > model.threshold:
+    if scores[idx] > threshold:
       color = RGB_MAPPER[cls + label_id_offset]
       object_cls = cfg.NAME_MAPPER[cls + label_id_offset]
       score = round(scores[idx].item() * 100)
@@ -107,6 +105,51 @@ def _draw_predections_on_image(path: str, model):
       image = cv2.rectangle(image, (x1,y1), (x2,y2), color, 1)
 
   return image
+
+def _draw_predections_on_image(path: str, model):
+  """Draw predections on image.
+
+  Args:
+    path: path to image
+    model: inference model
+
+  Returns:
+    image with predections drawn on it.
+  """
+  # getting predections
+  predections = model.predict(path)
+  detections = predections['detections']
+  
+  # getting image
+  image = cv2.imread(path,cv2.IMREAD_COLOR)
+
+  return _draw_boxes(image, detections, model.threshold)
+
+def _draw_predections_on_frame(frame, detect_fn, threshold):
+  """Draw predections on frame.
+
+  Args:
+    frame: video frame
+    model: inference model
+
+  Returns:
+    fram with predections drawn on it.
+  """
+  # frame to tensor
+  image_np = np.array(frame)
+  image_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
+  detections, *_ = detect_fn(image_tensor)
+
+  num_detections = int(detections.pop('num_detections'))
+  detections = {
+      key: value[0, :num_detections].numpy()
+      for key, value in detections.items()
+  }
+  detections['num_detections'] = num_detections
+  # detection_classes should be ints.
+  detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
+
+  return  _draw_boxes(frame, detections, threshold)
 
 def _mouse_callback(event, x, y, flags, param):
   """Check if 'save' is clicked.
@@ -199,3 +242,58 @@ def show_image_predections(path: str, model):
     print(f"INFO: image saved at {new_path}")
 
   return image_saved
+
+
+def run_inference_on_video(path, model):
+  """Run detection on video and save it.
+  
+  Args:
+    path: path to video.
+    model: inference model
+  """
+  timestr = strftime("%y%m%d_%H%M%S")
+  output_path = path.replace('.mp4', f'_out_{timestr}.mp4')
+  output_frames_per_second = 30.0
+
+  # Load a video
+  vcap = cv2.VideoCapture(path)
+  
+  if not vcap.isOpened():
+      raise Exception("The video can note be imported")
+
+  if vcap.isOpened():
+    width  = vcap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float `width`
+    height = vcap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+    # video writer
+    output_size = (int(width), int(height))
+    print(output_size)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    result = cv2.VideoWriter(output_path,  
+                            fourcc, 
+                            output_frames_per_second, 
+                            frameSize = output_size)
+
+  detect_fn = model.get_detection() # Outside of the loop for optimization
+  threshold = model.threshold
+
+  # Run detection on the first 2000 frame
+  count = 0
+  print("\n== Running detection on video...")
+  while vcap.isOpened():
+    # Capture one frame at a time
+    success, frame = vcap.read() 
+    if success:
+      count += 1
+      frame = _draw_predections_on_frame(frame, detect_fn, threshold)
+      result.write(frame)
+      if count > 2000:
+        break
+    else:
+      # No more frames
+      break
+  
+  print(f"== Running infrerence on video done, find the video at {output_path}")
+
+  # Release the capture
+  vcap.release()
